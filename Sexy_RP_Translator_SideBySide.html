@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Sexy RP Translator</title>
+  <style>
+    body {
+      background-color: #1e1e2f;
+      color: #f2f2f2;
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+    }
+    h1 {
+      color: #ff69b4;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .section {
+      background-color: #2a2a40;
+      padding: 1rem;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 500px;
+      box-sizing: border-box;
+    }
+    label {
+      font-weight: bold;
+      color: #ffb6c1;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background-color: #1b1b2b;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 4px;
+      resize: none;
+    }
+    button {
+      margin: 0.25rem 0.25rem 0.5rem 0;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .translate-btn { background-color: #ff69b4; color: #000; }
+    .copy-btn { background-color: #ffd700; color: #000; }
+    .paste-btn { background-color: #87cefa; color: #000; }
+    .clear-btn { background-color: #999; color: #000; }
+    .note {
+      font-size: 0.85rem;
+      color: #ccc;
+      text-align: center;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sexy RP Translator 💋</h1>
+  <div class="container">
+    <div class="section">
+      <label for="enInput">🇬🇧 English → French :</label><br>
+      <textarea id="enInput" placeholder="Type or paste your EN phrase..."></textarea>
+      <button class="paste-btn" onclick="pasteText('enInput')">📥 Paste</button>
+      <button class="translate-btn" onclick="translateToFR()">🔄 Translate</button>
+      <button class="copy-btn" onclick="copyText('frOutput')">📋 Copy FR</button>
+      <button class="clear-btn" onclick="clearText('enInput', 'frOutput')">🧹 Clear</button><br>
+      <textarea id="frOutput" readonly placeholder="French translation will appear here..."></textarea>
+    </div>
+
+    <div class="section">
+      <label for="frInput">🇫🇷 Français → English :</label><br>
+      <textarea id="frInput" placeholder="Tapez ou collez votre phrase FR..."></textarea>
+      <button class="paste-btn" onclick="pasteText('frInput')">📥 Coller</button>
+      <button class="translate-btn" onclick="translateToEN()">🔄 Traduire</button>
+      <button class="copy-btn" onclick="copyText('enOutput')">📋 Copier EN</button>
+      <button class="clear-btn" onclick="clearText('frInput', 'enOutput')">🧹 Effacer</button><br>
+      <textarea id="enOutput" readonly placeholder="La traduction anglaise apparaîtra ici..."></textarea>
+    </div>
+  </div>
+
+  <p class="note">🔐 Si Chrome bloque le collage automatique, autorisez-le dans les paramètres du site.</p>
+
+  <script>
+    async function translate(text, from, to) {
+      const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`);
+      const data = await res.json();
+      return data.responseData.translatedText;
+    }
+
+    async function translateToFR() {
+      const input = document.getElementById("enInput").value;
+      const output = await translate(input, "en", "fr");
+      document.getElementById("frOutput").value = output;
+    }
+
+    async function translateToEN() {
+      const input = document.getElementById("frInput").value;
+      const output = await translate(input, "fr", "en");
+      document.getElementById("enOutput").value = output;
+    }
+
+    function copyText(id) {
+      const text = document.getElementById(id);
+      text.select();
+      document.execCommand("copy");
+    }
+
+    async function pasteText(id) {
+      try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById(id).value = text;
+      } catch (err) {
+        alert("❗ Chrome bloque parfois ce bouton. Autorisez l'accès au presse-papiers dans les paramètres.");
+      }
+    }
+
+    function clearText(inputId, outputId) {
+      document.getElementById(inputId).value = "";
+      document.getElementById(outputId).value = "";
+    }
+  </script>
+</body>
+</html>
